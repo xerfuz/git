@@ -116,4 +116,12 @@ test_expect_success 'force remove worktree with untracked file' '
 	test_path_is_missing destination
 '
 
+test_expect_success 'remove missing worktree' '
+	git worktree add to-be-gone &&
+	test -d .git/worktrees/to-be-gone &&
+	mv to-be-gone gone &&
+	git worktree remove to-be-gone &&
+	test_path_is_missing .git/worktrees/to-be-gone
+'
+
 test_done
