@@ -10,6 +10,7 @@ test_expect_success 'test capability advertisement' '
 	agent=git/$(git version | cut -d" " -f3)
 	stateless-rpc
 	ls-refs
+	fetch
 	0000
 	EOF
 
