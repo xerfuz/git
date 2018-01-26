@@ -723,6 +723,12 @@ test_i18ngrep () {
 	error "bug in the test script: data on test_i18ngrep's stdin;" \
 	      "perhaps a git command's output is piped into it?"
 
+	if test $# -lt 2 ||
+	   { test "x!" = "x$1" && test $# -lt 3 ; }
+	then
+		error "bug in the test script: too few parameters to test_i18ngrep"
+	fi
+
 	if test -n "$GETTEXT_POISON"
 	then
 	    : # pretend success
