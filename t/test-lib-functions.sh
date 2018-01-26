@@ -719,6 +719,10 @@ test_i18ncmp () {
 # under GETTEXT_POISON this pretends that the command produced expected
 # results.
 test_i18ngrep () {
+	( read line ) &&
+	error "bug in the test script: data on test_i18ngrep's stdin;" \
+	      "perhaps a git command's output is piped into it?"
+
 	if test -n "$GETTEXT_POISON"
 	then
 	    : # pretend success
