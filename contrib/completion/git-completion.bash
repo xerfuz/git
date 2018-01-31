@@ -1784,7 +1784,7 @@ _git_merge_base ()
 {
 	case "$cur" in
 	--*)
-		__gitcomp "--octopus --independent --is-ancestor --fork-point"
+		__gitcomp_builtin merge-base
 		return
 		;;
 	esac
