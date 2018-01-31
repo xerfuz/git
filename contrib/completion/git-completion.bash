@@ -439,7 +439,7 @@ __git_refs ()
 			track=""
 			;;
 		*)
-			for i in HEAD FETCH_HEAD ORIG_HEAD MERGE_HEAD; do
+			for i in HEAD FETCH_HEAD ORIG_HEAD MERGE_HEAD ORIG_COMMIT; do
 				case "$i" in
 				$match*)
 					if [ -e "$dir/$i" ]; then
