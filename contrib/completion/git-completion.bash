@@ -2687,10 +2687,7 @@ _git_revert ()
 	fi
 	case "$cur" in
 	--*)
-		__gitcomp "
-			--edit --mainline --no-edit --no-commit --signoff
-			--strategy= --strategy-option=
-			"
+		__gitcomp_builtin revert "--no-edit"
 		return
 		;;
 	esac
