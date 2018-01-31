@@ -2238,14 +2238,7 @@ _git_config ()
 	esac
 	case "$cur" in
 	--*)
-		__gitcomp "
-			--system --global --local --file=
-			--list --replace-all
-			--get --get-all --get-regexp
-			--add --unset --unset-all
-			--remove-section --rename-section
-			--name-only
-			"
+		__gitcomp_builtin config
 		return
 		;;
 	branch.*.*)
