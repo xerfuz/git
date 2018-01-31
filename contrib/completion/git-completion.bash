@@ -1795,7 +1795,7 @@ _git_mv ()
 {
 	case "$cur" in
 	--*)
-		__gitcomp "--dry-run"
+		__gitcomp_builtin mv
 		return
 		;;
 	esac
