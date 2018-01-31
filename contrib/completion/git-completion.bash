@@ -1485,10 +1485,7 @@ _git_fsck ()
 {
 	case "$cur" in
 	--*)
-		__gitcomp "
-			--tags --root --unreachable --cache --no-reflogs --full
-			--strict --verbose --lost-found --name-objects
-			"
+		__gitcomp_builtin fsck "--no-reflogs"
 		return
 		;;
 	esac
