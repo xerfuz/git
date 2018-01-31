@@ -1495,7 +1495,7 @@ _git_gc ()
 {
 	case "$cur" in
 	--*)
-		__gitcomp "--prune --aggressive"
+		__gitcomp_builtin gc
 		return
 		;;
 	esac
