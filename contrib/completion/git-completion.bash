@@ -1281,7 +1281,7 @@ _git_cherry_pick ()
 	fi
 	case "$cur" in
 	--*)
-		__gitcomp "--edit --no-commit --signoff --strategy= --mainline"
+		__gitcomp_builtin cherry-pick
 		;;
 	*)
 		__git_complete_refs
