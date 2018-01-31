@@ -1110,12 +1110,7 @@ _git_am ()
 		return
 		;;
 	--*)
-		__gitcomp "
-			--3way --committer-date-is-author-date --ignore-date
-			--ignore-whitespace --ignore-space-change
-			--interactive --keep --no-utf8 --signoff --utf8
-			--whitespace= --scissors
-			"
+		__gitcomp_builtin am "--no-utf8"
 		return
 	esac
 }
