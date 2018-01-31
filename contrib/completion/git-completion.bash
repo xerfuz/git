@@ -280,6 +280,30 @@ __gitcomp ()
 	esac
 }
 
+# This function is equivalent to
+#
+#    __gitcomp "$(git xxx --git-completion-helper) ..."
+#
+# except that the value from $(git) is cached
+__gitcomp_builtin ()
+{
+	# spaces must be replaced with underscore for multi-word
+	# commands, e.g. "git remote add" becomes remote_add.
+	local cmd="$1"
+	shift
+
+	local var=__gitcomp_builtin_"${cmd/-/_}"
+	local options
+	eval "options=\$$var"
+
+	if [ -z "$options" ]; then
+		declare -g "$var=$(__git ${cmd/_/ } --git-completion-helper)"
+		eval "options=\$$var"
+	fi
+
+	__gitcomp "$options $*"
+}
+
 # Variation of __gitcomp_nl () that appends to the existing list of
 # completion candidates, COMPREPLY.
 __gitcomp_nl_append ()
