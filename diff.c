@@ -2129,6 +2129,7 @@ struct diffstat_t {
 		char *from_name;
 		char *name;
 		char *print_name;
+		const char *comments;
 		unsigned is_unmerged:1;
 		unsigned is_binary:1;
 		unsigned is_renamed:1;
@@ -2204,6 +2205,9 @@ static void fill_print_name(struct diffstat_file *file)
 		pprint_rename(&pname, file->from_name, file->name);
 	else
 		quote_c_style(file->name, &pname, NULL, 0);
+
+	if (file->comments)
+		strbuf_addf(&pname, " (%s)", file->comments);
 
 	file->print_name = strbuf_detach(&pname, NULL);
 }
@@ -3239,6 +3243,32 @@ static void builtin_diff(const char *name_a,
 	return;
 }
 
+static char *get_compact_summary(const struct diff_filepair *p, int is_renamed)
+{
+	if (!is_renamed) {
+		if (p->status == DIFF_STATUS_ADDED) {
+			if (S_ISLNK(p->two->mode))
+				return "new +l";
+			else if ((p->two->mode & 0777) == 0755)
+				return "new +x";
+			else
+				return "new";
+		} else if (p->status == DIFF_STATUS_DELETED)
+			return "gone";
+	}
+	if (S_ISLNK(p->one->mode) && !S_ISLNK(p->two->mode))
+		return "mode -l";
+	else if (!S_ISLNK(p->one->mode) && S_ISLNK(p->two->mode))
+		return "mode +l";
+	else if ((p->one->mode & 0777) == 0644 &&
+		 (p->two->mode & 0777) == 0755)
+		return "mode +x";
+	else if ((p->one->mode & 0777) == 0755 &&
+		 (p->two->mode & 0777) == 0644)
+		return "mode -x";
+	return NULL;
+}
+
 static void builtin_diffstat(const char *name_a, const char *name_b,
 			     struct diff_filespec *one,
 			     struct diff_filespec *two,
@@ -3258,6 +3288,8 @@ static void builtin_diffstat(const char *name_a, const char *name_b,
 
 	data = diffstat_add(diffstat, name_a, name_b);
 	data->is_interesting = p->status != DIFF_STATUS_UNKNOWN;
+	if (o->flags.stat_with_summary)
+		data->comments = get_compact_summary(p, data->is_renamed);
 
 	if (!one || !two) {
 		data->is_unmerged = 1;
@@ -4301,6 +4333,7 @@ static int stat_opt(struct diff_options *options, const char **av)
 	int graph_width = options->stat_graph_width;
 	int count = options->stat_count;
 	int argcount = 1;
+	unsigned with_summary = options->flags.stat_with_summary;
 
 	if (!skip_prefix(arg, "--stat", &arg))
 		die("BUG: stat option does not begin with --stat: %s", arg);
@@ -4344,6 +4377,9 @@ static int stat_opt(struct diff_options *options, const char **av)
 				count = strtoul(av[1], &end, 10);
 				argcount = 2;
 			}
+		} else if (skip_prefix(arg, "-with-summary", &arg)) {
+			with_summary = 1;
+			end = (char*)arg;
 		}
 		break;
 	case '=':
@@ -4362,6 +4398,7 @@ static int stat_opt(struct diff_options *options, const char **av)
 	options->stat_graph_width = graph_width;
 	options->stat_width = width;
 	options->stat_count = count;
+	options->flags.stat_with_summary = with_summary;
 	return argcount;
 }
 
@@ -4526,7 +4563,10 @@ int diff_opt_parse(struct diff_options *options,
 	else if (!strcmp(arg, "-s") || !strcmp(arg, "--no-patch"))
 		options->output_format |= DIFF_FORMAT_NO_OUTPUT;
 	else if (starts_with(arg, "--stat"))
-		/* --stat, --stat-width, --stat-name-width, or --stat-count */
+		/*
+		 * --stat, --stat-width, --stat-name-width,
+		 * --stat-count or --stat-with-summary.
+		 */
 		return stat_opt(options, av);
 
 	/* renames options */
