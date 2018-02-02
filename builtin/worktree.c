@@ -614,7 +614,8 @@ static void validate_no_submodules(const struct worktree *wt)
 	struct index_state istate = { NULL };
 	int i, found_submodules = 0;
 
-	if (read_index_from(&istate, worktree_git_path(wt, "index")) > 0) {
+	if (read_index_from(&istate, worktree_git_path(wt, "index"),
+			    get_worktree_git_dir(wt)) > 0) {
 		for (i = 0; i < istate.cache_nr; i++) {
 			struct cache_entry *ce = istate.cache[i];
 
